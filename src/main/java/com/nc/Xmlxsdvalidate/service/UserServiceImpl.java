@@ -8,8 +8,11 @@ import com.nc.Xmlxsdvalidate.exception.ResourceNotFoundException;
 import com.nc.Xmlxsdvalidate.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,12 +60,26 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    public void processUserData(UserDto userDto, String xsdContent) throws Exception {
+    public void processUserData(UserDto userDto, MultipartFile xsdFile, String xsdUrl) throws Exception {
+
+        String xsdContent = null;
+
+        if (xsdFile != null && !xsdFile.isEmpty()) {
+            xsdContent = new String(xsdFile.getBytes(), StandardCharsets.UTF_8);
+        } else if (xsdUrl != null && !xsdUrl.isEmpty()) {
+            URL url = new URL(xsdUrl);
+            try (var inputStream = url.openStream()) {
+                xsdContent = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
+        } else {
+            throw new IllegalArgumentException("Either xsdFile or xsdUrl must be provided.");
+        }
+
         // Créer XML
         String xmlContent = xmlService.createXml(userDto);
 
         // Valider XML
-        if (xmlService.validateXml(xmlContent)) {
+        if (xmlService.validateXml(xmlContent, xsdContent)) {
             // Écrire XML dans un fichier temporaire
             File tempFile = File.createTempFile("user", ".xml");
             Files.write(tempFile.toPath(), xmlContent.getBytes());

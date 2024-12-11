@@ -39,13 +39,14 @@ public class XmlService {
         return sw.toString();
     }
 
-    public boolean validateXml(String xmlContent) throws SAXException {
+    public boolean validateXml(String xmlContent, String xsdContent) throws SAXException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = factory.newSchema(new StreamSource(new StringReader(this.xsdContent)));
+        Schema schema = factory.newSchema(new StreamSource(new StringReader(xsdContent)));
         try {
             schema.newValidator().validate(new StreamSource(new StringReader(xmlContent)));
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
