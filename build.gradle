@@ -42,7 +42,7 @@ dependencies {
 	//XML et XSD
 
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.9'
     implementation 'org.apache.commons:commons-compress:1.21'
 
 
