@@ -2,6 +2,7 @@ package com.nc.Xmlxsdvalidate.controller;
 
 import com.nc.Xmlxsdvalidate.dto.UserDto;
 import com.nc.Xmlxsdvalidate.service.UserService;
+import com.nc.Xmlxsdvalidate.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,5 +40,15 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/process")
+    public ResponseEntity<String> processUser(@RequestBody UserDto userDto, @RequestParam String xsdContent) {
+        try {
+            ((UserServiceImpl) userService).processUserData(userDto, xsdContent);
+            return ResponseEntity.ok("Traitement réussi");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erreur lors du traitement : " + e.getMessage());
+        }
     }
 }
